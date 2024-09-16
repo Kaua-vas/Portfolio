@@ -10,8 +10,8 @@ import joblib
 import matplotlib.pyplot as plt
 
 # Caminho para os arquivos
-train_file_path = 'C:\\Users\\KELLY\\Desktop\\Portfolio\\Inventory Demand Forecast\\train.csv'
-store_file_path = 'C:\\Users\\KELLY\\Desktop\\Portfolio\\Inventory Demand Forecast\\store.csv'
+train_file_path = './train.csv'
+store_file_path = './store.csv'
 
 # Carregar os dados de treino e informações das lojas
 train_df = pd.read_csv(train_file_path)
