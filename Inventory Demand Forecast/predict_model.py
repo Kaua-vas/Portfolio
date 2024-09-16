@@ -2,67 +2,67 @@ import pandas as pd
 import joblib
 from tensorflow.keras.models import load_model
 
-# Caminho para o arquivo de teste original
-test_file_path = 'C:/Users/KELLY/Desktop/Portfolio/Inventory Demand Forecast/test.csv'
+# Paths to the test file and store information (relative paths)
+test_file_path = './test.csv'
+store_file_path = './store.csv'
 
-# Carregar o conjunto de teste
+# Load the test dataset
 test_df = pd.read_csv(test_file_path)
 
-# Preencher valores ausentes na coluna 'Open' com 1 (assumindo que as lojas estavam abertas)
+# Fill missing values in the 'Open' column with 1 (assuming the store was open)
 test_df['Open'].fillna(1, inplace=True)
 
-# Salvar o arquivo de teste atualizado
-test_cleaned_file_path = 'C:/Users/KELLY/Desktop/Portfolio/Inventory Demand Forecast/test_cleaned.csv'
+# Save the cleaned test file to ensure consistency
+test_cleaned_file_path = './test_cleaned.csv'
 test_df.to_csv(test_cleaned_file_path, index=False)
 
-print("Arquivo test_cleaned.csv gerado com sucesso!")
+print("Test file cleaned and saved successfully!")
 
-# Carregar o store.csv para fazer o merge com as informações de loja
-store_file_path = 'C:/Users/KELLY/Desktop/Portfolio/Inventory Demand Forecast/store.csv'
+# Load the store information to merge with the test data
 store_df = pd.read_csv(store_file_path)
 
-# Mesclar o conjunto de teste limpo com as informações de loja
+# Merge the cleaned test data with store information
 test_df_cleaned = pd.read_csv(test_cleaned_file_path)
 test_df_merged = pd.merge(test_df_cleaned, store_df, on='Store', how='left')
 
-# Gerar dummies para as variáveis categóricas no conjunto de teste
+# Generate dummies for categorical variables in the test set
 categorical_columns = ['StateHoliday', 'StoreType', 'Assortment', 'PromoInterval']
 test_df_merged = pd.get_dummies(test_df_merged, columns=categorical_columns, drop_first=True)
 
-# Carregar o scaler salvo para aplicar a normalização
-scaler_path = 'C:/Users/KELLY/Desktop/Portfolio/scaler_previsao_vendas.save'
+# Load the previously saved scaler to apply normalization (relative path)
+scaler_path = './scaler_previsao_vendas.save'
 scaler = joblib.load(scaler_path)
 
-# Garantir que as colunas do teste sejam as mesmas do treino (com ajuste para colunas vistas pelo scaler)
+# Ensure that the test set has the same columns as the training set (based on the scaler)
 scaler_columns = scaler.feature_names_in_
 
-# Adicionar colunas faltantes no conjunto de teste e preencher com 0
+# Add missing columns in the test set (if any) and fill with 0
 for col in scaler_columns:
     if col not in test_df_merged.columns:
         test_df_merged[col] = 0
 
-# Remover colunas extras no conjunto de teste
+# Remove extra columns not seen by the scaler
 test_df_cleaned_final = test_df_merged[scaler_columns]
 
-# Aplicar a normalização nos dados de teste
+# Apply normalization to the test set
 X_test_scaled = scaler.transform(test_df_cleaned_final)
 
-# Carregar o modelo treinado
-model_path = 'C:/Users/KELLY/Desktop/Portfolio/modelo_previsao_vendas_final.keras'
+# Load the trained model for prediction (relative path)
+model_path = './modelo_previsao_vendas_final.keras'
 modelo_salvo = load_model(model_path)
 
-# Fazer previsões
+# Make predictions on the scaled test set
 previsoes = modelo_salvo.predict(X_test_scaled)
 
-# Salvar as previsões em um novo arquivo CSV para submissão
-output_file_path = 'C:/Users/KELLY/Desktop/Portfolio/Inventory Demand Forecast/submission_updated.csv'
+# Save predictions in a new CSV file for submission
+output_file_path = './submission_updated.csv'
 output_df = pd.DataFrame({'Id': test_df_cleaned['Id'], 'Sales': previsoes.flatten()})
 
-# Substituir valores NaN por 0 nas previsões
+# Replace NaN values with 0 in the predictions (if any)
 output_df['Sales'].fillna(0, inplace=True)
 
-# Salvar o arquivo de submissão atualizado novamente
-output_file_path_corrected = 'C:/Users/KELLY/Desktop/Portfolio/Inventory Demand Forecast/submission_corrected.csv'
+# Save the final corrected submission file (relative path)
+output_file_path_corrected = './submission_corrected.csv'
 output_df.to_csv(output_file_path_corrected, index=False)
 
-print(f"Previsões salvas com correções em {output_file_path_corrected}")
+print(f"Predictions saved with corrections in {output_file_path_corrected}")
