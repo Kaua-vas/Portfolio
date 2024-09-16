@@ -1,6 +1,8 @@
 import pandas as pd
 import joblib
 from tensorflow.keras.models import load_model
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Paths to the test file and store information (relative paths)
 test_file_path = './test.csv'
@@ -66,3 +68,45 @@ output_file_path_corrected = './submission_corrected.csv'
 output_df.to_csv(output_file_path_corrected, index=False)
 
 print(f"Predictions saved with corrections in {output_file_path_corrected}")
+
+# Load historical data to compare with predictions
+train_file_path = './train.csv'
+train_df = pd.read_csv(train_file_path)
+
+# Merge the historical sales with the store info to get comparable data
+historical_sales = pd.merge(train_df, store_df, on='Store', how='left')
+
+# Convert 'Date' to datetime in both datasets
+historical_sales['Date'] = pd.to_datetime(historical_sales['Date'])
+test_df_cleaned['Date'] = pd.to_datetime(test_df_cleaned['Date'])
+
+# Group by store to compare predictions and historical sales
+historical_sales_by_store = historical_sales.groupby('Store')['Sales'].mean().reset_index()
+predictions_by_store = output_df.groupby('Id')['Sales'].mean().reset_index()
+
+# Plot comparison of sales predictions vs historical sales by store
+plt.figure(figsize=(10, 6))
+sns.barplot(x='Store', y='Sales', data=historical_sales_by_store, color='green', label='Historical Sales')
+sns.barplot(x='Id', y='Sales', data=predictions_by_store, color='blue', alpha=0.5, label='Predictions')
+plt.title('Sales Predictions vs Historical Sales (by store)')
+plt.xlabel('Store')
+plt.ylabel('Sales')
+plt.legend()
+plt.savefig('./images/sales_vs_historical.png')  # Save the image
+plt.show()
+
+# Group by date to compare sales predictions and historical sales by week
+historical_sales_by_week = historical_sales.resample('W-Mon', on='Date')['Sales'].mean().reset_index()
+predictions_by_week = test_df_cleaned.resample('W-Mon', on='Date')['Sales'].mean().reset_index()
+
+# Plot comparison of sales predictions vs historical sales by week
+plt.figure(figsize=(10, 6))
+sns.lineplot(x='Date', y='Sales', data=historical_sales_by_week, marker='o', color='green', label='Historical Sales')
+sns.lineplot(x='Date', y='Sales', data=predictions_by_week, marker='o', color='blue', label='Predictions')
+plt.title('Sales Predictions vs Historical Sales (by week)')
+plt.xlabel('Date')
+plt.ylabel('Sales')
+plt.grid(True)
+plt.legend()
+plt.savefig('./images/sales_vs_week.png')  # Save the image
+plt.show()
