@@ -115,13 +115,13 @@ The model was trained to predict sales for the Rossmann stores based on historic
 Here are some key visualizations from the project:
 
 ### Loss During Training and Validation:
-![Loss Graph](./images/loss_graph.png)
+![Loss Graph](./images/training.png)
 
 ### Sales Predictions vs. Historical Sales (by store):
-![Sales vs Historical Graph](./images/sales_vs_historical.png)
+![Sales vs Historical Graph](./images/predict_stores.png)
 
 ### Sales Predictions vs. Historical Sales (by week):
-![Sales vs Week Graph](./images/sales_vs_week.png)
+![Sales vs Week Graph](./images/predict_week.png)
 
 ## Next Steps
 
