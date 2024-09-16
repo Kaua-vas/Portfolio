@@ -1,15 +1,16 @@
 import pandas as pd
 
-# Caminho para o arquivo de teste original
-test_file_path = 'C:/Users/KELLY/Desktop/Portfolio/Inventory Demand Forecast/test.csv'
+# Path to the original test file (relative path)
+test_file_path = './test.csv'
 
-# Carregar o conjunto de teste
+# Load the test dataset
 test_df = pd.read_csv(test_file_path)
 
-# Preencher valores ausentes na coluna 'Open' com 1 (assumindo que as lojas estavam abertas)
+# Fill missing values in the 'Open' column with 1 (assuming the store was open)
 test_df['Open'].fillna(1, inplace=True)
 
-# Salvar o arquivo atualizado
-test_df.to_csv('C:/Users/KELLY/Desktop/Portfolio/Inventory Demand Forecast/test_cleaned.csv', index=False)
+# Save the cleaned test file (relative path)
+test_cleaned_file_path = './test_cleaned.csv'
+test_df.to_csv(test_cleaned_file_path, index=False)
 
-print("Arquivo test_cleaned.csv gerado com sucesso!")
+print("Test file cleaned and saved successfully!")
